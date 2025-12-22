@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.movieapp.databinding.FragmentMoviesBinding
 
 class MoviesFragment : Fragment() {
@@ -31,12 +31,12 @@ class MoviesFragment : Fragment() {
     private fun setupView() {
     }
 
-    private fun setupListener() {
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            enabled = true
-        ) {
-            activity?.finish()
+    private fun setupListener() = with(binding){
+        tvMovies.setOnClickListener {
+            val action = MoviesFragmentDirections.moviesToDetail(
+                id = 1
+            )
+            findNavController().navigate(action)
         }
     }
 

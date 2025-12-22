@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/genreFragment">
+
+    <fragment
+        android:id="@+id/genreFragment"
+        android:name="com.example.movieapp.ui.fragments.GenreFragment"
+        android:label="GenreFragment"
+        tools:layout="@layout/fragment_genre">
+
+        <action
+            android:id="@+id/genre_to_movies"
+            app:destination="@id/moviesFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/moviesFragment"
+        android:name="com.example.movieapp.ui.fragments.MoviesFragment"
+        android:label="MoviesFragment"
+        tools:layout="@layout/fragment_movies">
+
+        <action
+            android:id="@+id/movies_to_detail"
+            app:destination="@id/movieDetailFragment" />
+
+        <action
+            android:id="@+id/movies_to_genre"
+            app:destination="@id/genreFragment" />
+
+        <argument
+            android:name="id"
+            app:argType="integer" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/movieDetailFragment"
+        android:name="com.example.movieapp.ui.fragments.MovieDetailFragment"
+        android:label="MovieDetailFragment"
+        tools:layout="@layout/fragment_movie_detail">
+
+        <argument
+            android:name="id"
+            app:argType="integer" />
+
+    </fragment>
+</navigation>
