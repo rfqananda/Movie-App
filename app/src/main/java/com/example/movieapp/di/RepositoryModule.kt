@@ -1,42 +1,34 @@
 package com.example.movieapp.di
 
 
-import com.example.movieapp.data.api.TmdbApiService
 import com.example.movieapp.data.repository.GenreRepository
 import com.example.movieapp.data.repository.MovieDetailRepository
 import com.example.movieapp.data.repository.MovieRepository
 import com.example.movieapp.ui.repository.GenreRepositoryImpl
 import com.example.movieapp.ui.repository.MovieDetailRepositoryImpl
 import com.example.movieapp.ui.repository.MovieRepositoryImpl
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import javax.inject.Singleton
 
 @Module
 abstract class RepositoryModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideGenreRepository(
-        apiService: TmdbApiService
-    ): GenreRepository {
-        return GenreRepositoryImpl(apiService)
-    }
+    abstract fun bindGenreRepository(
+        impl: GenreRepositoryImpl
+    ): GenreRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideMovieRepository(
-        apiService: TmdbApiService
-    ): MovieRepository {
-        return MovieRepositoryImpl(apiService)
-    }
+    abstract fun bindMovieRepository(
+        impl: MovieRepositoryImpl
+    ): MovieRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideMovieDetailRepository(
-        apiService: TmdbApiService
-    ): MovieDetailRepository {
-        return MovieDetailRepositoryImpl(apiService)
-    }
-
+    abstract fun bindMovieDetailRepository(
+        impl: MovieDetailRepositoryImpl
+    ): MovieDetailRepository
 }

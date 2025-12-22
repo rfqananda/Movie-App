@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -50,12 +51,16 @@ class NetworkModule {
     @Singleton
     fun provideChuckerInterceptor(
         context: Context
-    ): ChuckerInterceptor {
-        return ChuckerInterceptor.Builder(context)
-            .collector(ChuckerCollector(context))
-            .maxContentLength(250_000L)
-            .alwaysReadResponseBody(true)
-            .build()
+    ): Interceptor {
+        return if (BuildConfig.DEBUG) {
+            ChuckerInterceptor.Builder(context)
+                .collector(ChuckerCollector(context))
+                .maxContentLength(250_000L)
+                .alwaysReadResponseBody(true)
+                .build()
+        } else {
+            Interceptor { chain -> chain.proceed(chain.request()) }
+        }
     }
 
     @Provides
