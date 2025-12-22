@@ -19,6 +19,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "TMDB_API_KEY",
+            "\"${project.properties["TMDB_API_KEY"]}\""
+        )
     }
 
     buildTypes {
@@ -40,6 +46,7 @@ android {
     buildFeatures {
         compose = false
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -66,4 +73,7 @@ dependencies {
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
+
+    debugImplementation(libs.chucker)
+    releaseImplementation(libs.chucker.no.op)
 }
