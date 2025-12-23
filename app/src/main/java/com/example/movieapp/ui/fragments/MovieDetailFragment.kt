@@ -67,13 +67,13 @@ class MovieDetailFragment : Fragment() {
         loadData()
     }
 
-    private fun setupView() {
-        binding.rvVideos.apply {
+    private fun setupView() = with(binding) {
+        rvVideos.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = videoAdapter
         }
 
-        binding.rvReviews.apply {
+        rvReviews.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = reviewAdapter
             addOnScrollListener(createScrollListener())
@@ -105,7 +105,8 @@ class MovieDetailFragment : Fragment() {
 
             if (!isLoadingMoreReviews &&
                 (visibleItemCount + firstVisibleItemPosition) >= totalItemCount &&
-                firstVisibleItemPosition >= 0) {
+                firstVisibleItemPosition >= 0
+            ) {
                 viewModel.loadNextReviewPage()
             }
         }
@@ -117,17 +118,18 @@ class MovieDetailFragment : Fragment() {
         viewModel.loadMovieReviews(args.id)
     }
 
-    private fun observeViewModel() {
+    private fun observeViewModel() = with(binding) {
         viewModel.movieDetail.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Loading -> {
-                    binding.progressBar.isVisible = true
+                    progressBar.isVisible = true
                 }
+
                 is Result.Success -> {
-                    binding.progressBar.isVisible = false
+                    progressBar.isVisible = false
                     val movie = result.data
 
-                    binding.apply {
+                    apply {
                         tvTitle.text = movie.title
                         tvRating.text = getString(R.string.movie_rating, movie.rating)
                         tvRuntime.text = getString(R.string.detail_runtime_format, movie.runtime)
@@ -147,9 +149,11 @@ class MovieDetailFragment : Fragment() {
                             .into(ivPoster)
                     }
                 }
+
                 is Result.Error -> {
-                    binding.progressBar.isVisible = false
+                    progressBar.isVisible = false
                 }
+
                 else -> {}
             }
         }
@@ -157,22 +161,25 @@ class MovieDetailFragment : Fragment() {
         viewModel.movieVideos.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Loading -> {
-                    // Bisa tambahkan loading indicator untuk videos jika perlu
+                    progressBar.isVisible = true
                 }
+
                 is Result.Success -> {
                     if (result.data.isEmpty()) {
-                        binding.tvVideosLabel.isVisible = false
-                        binding.rvVideos.isVisible = false
+                        tvVideosLabel.isVisible = false
+                        rvVideos.isVisible = false
                     } else {
-                        binding.tvVideosLabel.isVisible = true
-                        binding.rvVideos.isVisible = true
+                        tvVideosLabel.isVisible = true
+                        rvVideos.isVisible = true
                         videoAdapter.submitList(result.data)
                     }
                 }
+
                 is Result.Error -> {
-                    binding.tvVideosLabel.isVisible = false
-                    binding.rvVideos.isVisible = false
+                    tvVideosLabel.isVisible = false
+                    rvVideos.isVisible = false
                 }
+
                 else -> {}
             }
         }
@@ -180,23 +187,26 @@ class MovieDetailFragment : Fragment() {
         viewModel.movieReviews.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Result.Loading -> {
-                    // Bisa tambahkan loading indicator untuk reviews jika perlu
+                    progressBar.isVisible = true
                 }
+
                 is Result.Success -> {
 
                     if (result.data.isEmpty()) {
-                        binding.tvReviewsLabel.isVisible = false
-                        binding.rvReviews.isVisible = false
+                        tvReviewsLabel.isVisible = false
+                        rvReviews.isVisible = false
                     } else {
-                        binding.tvReviewsLabel.isVisible = true
-                        binding.rvReviews.isVisible = true
+                        tvReviewsLabel.isVisible = true
+                        rvReviews.isVisible = true
                         reviewAdapter.submitList(result.data)
                     }
                 }
+
                 is Result.Error -> {
-                    binding.tvReviewsLabel.isVisible = false
-                    binding.rvReviews.isVisible = false
+                    tvReviewsLabel.isVisible = false
+                    rvReviews.isVisible = false
                 }
+
                 else -> {}
             }
         }
@@ -206,23 +216,26 @@ class MovieDetailFragment : Fragment() {
                 is Result.Loading -> {
                     isLoadingMoreReviews = true
                 }
+
                 is Result.Success -> {
                     isLoadingMoreReviews = false
                 }
+
                 is Result.Error -> {
                     isLoadingMoreReviews = false
                 }
+
                 else -> {}
             }
         }
 
         viewModel.displayedReviews.observe(viewLifecycleOwner) { list ->
             if (list.isNullOrEmpty()) {
-                binding.tvReviewsLabel.isVisible = false
-                binding.rvReviews.isVisible = false
+                tvReviewsLabel.isVisible = false
+                rvReviews.isVisible = false
             } else {
-                binding.tvReviewsLabel.isVisible = true
-                binding.rvReviews.isVisible = true
+                tvReviewsLabel.isVisible = true
+                rvReviews.isVisible = true
                 reviewAdapter.submitList(list)
             }
         }

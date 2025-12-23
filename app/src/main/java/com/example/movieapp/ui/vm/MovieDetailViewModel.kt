@@ -50,8 +50,7 @@ class MovieDetailViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = repository.getMovieDetail(movieId)) {
                 is Result.Success -> {
-                    _movieDetail.value = result.data?.let { Result.Success(it) }
-                        ?: Result.Error(ErrorMessage.emptyResponse)
+                    _movieDetail.value = result.data.let { Result.Success(it) }
                 }
                 is Result.Error -> _movieDetail.value = Result.Error(result.message)
                 else -> _movieDetail.value = Result.Error(ErrorMessage.unknownError)
