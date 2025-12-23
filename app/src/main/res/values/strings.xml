@@ -24,4 +24,13 @@
 
     <string name="movie_rating">⭐ %.1f</string>
 
+    <string name="detail_runtime_format">%s</string>
+
+    <string name="read_more">Read More</string>
+    <string name="read_less">Read Less</string>
+
+    <string name="error_video_not_available">Video not available</string>
+    <string name="youtube_app_uri">vnd.youtube:%1$s</string>
+    <string name="youtube_web_url">https://www.youtube.com/watch?v=%1$s</string>
+
 </resources>

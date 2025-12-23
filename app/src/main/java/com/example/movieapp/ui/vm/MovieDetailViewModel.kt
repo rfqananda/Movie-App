@@ -8,6 +8,7 @@ import com.example.movieapp.data.repository.MovieDetailRepository
 import com.example.movieapp.ui.model.MovieDetailUiModel
 import com.example.movieapp.ui.model.MovieReviewUiModel
 import com.example.movieapp.ui.model.MovieVideoUiModel
+import com.example.registrationapp.core.ErrorMessage
 import javax.inject.Inject
 import com.example.registrationapp.core.Result
 import kotlinx.coroutines.launch
@@ -28,22 +29,50 @@ class MovieDetailViewModel @Inject constructor(
     private val _loadMoreReviews = MutableLiveData<Result<List<MovieReviewUiModel>>>()
     val loadMoreReviews: LiveData<Result<List<MovieReviewUiModel>>> = _loadMoreReviews
 
-    private var currentMovieId: Int = 0
-    private var currentReviewPage: Int = 1
-    private var isLastReviewPage: Boolean = false
+    private val _displayedReviews = MutableLiveData<List<MovieReviewUiModel>>()
+    val displayedReviews: LiveData<List<MovieReviewUiModel>> = _displayedReviews
+
+    private var currentMovieId = 0
+    private var currentReviewPage = 1
+    private var isLastReviewPage = false
+
+    private val expandedReviewKeys = mutableSetOf<String>()
+    private fun reviewKey(r: MovieReviewUiModel) = "${r.author}|${r.createdAt}"
+
+    private fun applyExpandedFlags(list: List<MovieReviewUiModel>): List<MovieReviewUiModel> {
+        return list.map { it.copy(isExpanded = expandedReviewKeys.contains(reviewKey(it))) }
+    }
 
     fun loadMovieDetail(movieId: Int) {
         currentMovieId = movieId
         _movieDetail.value = Result.Loading
+
         viewModelScope.launch {
-            _movieDetail.value = repository.getMovieDetail(movieId)
+            when (val result = repository.getMovieDetail(movieId)) {
+                is Result.Success -> {
+                    _movieDetail.value = result.data?.let { Result.Success(it) }
+                        ?: Result.Error(ErrorMessage.emptyResponse)
+                }
+                is Result.Error -> _movieDetail.value = Result.Error(result.message)
+                else -> _movieDetail.value = Result.Error(ErrorMessage.unknownError)
+            }
         }
     }
 
     fun loadMovieVideos(movieId: Int) {
         _movieVideos.value = Result.Loading
+
         viewModelScope.launch {
-            _movieVideos.value = repository.getMovieVideos(movieId)
+            when (val result = repository.getMovieVideos(movieId)) {
+                is Result.Success -> {
+                    val data = result.data
+                    _movieVideos.value =
+                        if (data.isEmpty()) Result.Empty
+                        else Result.Success(data)
+                }
+                is Result.Error -> _movieVideos.value = Result.Error(result.message)
+                else -> _movieVideos.value = Result.Error(ErrorMessage.unknownError)
+            }
         }
     }
 
@@ -53,8 +82,21 @@ class MovieDetailViewModel @Inject constructor(
         isLastReviewPage = false
 
         _movieReviews.value = Result.Loading
+
         viewModelScope.launch {
-            _movieReviews.value = repository.getMovieReviews(movieId, currentReviewPage)
+            when (val result = repository.getMovieReviews(movieId, currentReviewPage)) {
+                is Result.Success -> {
+                    val data = applyExpandedFlags(result.data)
+                    if (data.isEmpty()) {
+                        _movieReviews.value = Result.Empty
+                    } else {
+                        _movieReviews.value = Result.Success(data)
+                        _displayedReviews.value = data
+                    }
+                }
+                is Result.Error -> _movieReviews.value = Result.Error(result.message)
+                else -> _movieReviews.value = Result.Error(ErrorMessage.unknownError)
+            }
         }
     }
 
@@ -65,12 +107,39 @@ class MovieDetailViewModel @Inject constructor(
         _loadMoreReviews.value = Result.Loading
 
         viewModelScope.launch {
-            val result = repository.getMovieReviews(currentMovieId, currentReviewPage)
-            _loadMoreReviews.value = result
+            when (val result =
+                repository.getMovieReviews(currentMovieId, currentReviewPage)) {
 
-            if (result is Result.Success && result.data.isEmpty()) {
-                isLastReviewPage = true
+                is Result.Success -> {
+                    val data = applyExpandedFlags(result.data)
+                    if (data.isEmpty()) {
+                        isLastReviewPage = true
+                        _loadMoreReviews.value = Result.Empty
+                    } else {
+                        val current = _displayedReviews.value.orEmpty()
+                        _displayedReviews.value = current + data
+                        _loadMoreReviews.value = Result.Success(data)
+                    }
+                }
+                is Result.Error -> _loadMoreReviews.value = Result.Error(result.message)
+                else -> _loadMoreReviews.value = Result.Error(ErrorMessage.unknownError)
             }
         }
+    }
+
+    fun toggleReviewExpanded(review: MovieReviewUiModel) {
+        val key = reviewKey(review)
+        if (expandedReviewKeys.contains(key)) {
+            expandedReviewKeys.remove(key)
+        } else {
+            expandedReviewKeys.add(key)
+        }
+
+        _displayedReviews.value = _displayedReviews.value
+            ?.map {
+                if (reviewKey(it) == key)
+                    it.copy(isExpanded = expandedReviewKeys.contains(key))
+                else it
+            }
     }
 }

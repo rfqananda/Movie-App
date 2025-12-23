@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.movieapp.R
 import com.example.movieapp.databinding.ItemReviewBinding
 import com.example.movieapp.ui.model.MovieReviewUiModel
 
@@ -48,7 +49,18 @@ class ReviewAdapter : ListAdapter<MovieReviewUiModel, ReviewAdapter.ReviewViewHo
             binding.apply {
                 tvAuthor.text = review.author
                 tvCreatedAt.text = review.createdAt
-                tvContent.text = review.content
+
+                if (review.isExpanded) {
+                    tvContent.text = review.content
+                    tvReadMore.text = root.context.getString(R.string.read_less)
+                } else {
+                    tvContent.text = if (review.content.length > 200) {
+                        review.content.take(200) + "..."
+                    } else {
+                        review.content
+                    }
+                    tvReadMore.text = if (review.content.length > 200) root.context.getString(R.string.read_more) else ""
+                }
 
                 val firstLetter = review.author.firstOrNull()?.uppercase() ?: "A"
                 tvAuthorAvatar.text = firstLetter
@@ -56,6 +68,7 @@ class ReviewAdapter : ListAdapter<MovieReviewUiModel, ReviewAdapter.ReviewViewHo
                 tvReadMore.isVisible = review.content.length > 200
             }
         }
+
     }
 
     private class ReviewDiffCallback : DiffUtil.ItemCallback<MovieReviewUiModel>() {
