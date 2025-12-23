@@ -15,8 +15,34 @@ fun GenreListResponse.toUiModel(): List<GenreUiModel> {
     return genres.map {
         GenreUiModel(
             id = it.id,
-            name = it.name
+            name = it.name,
+            icon = getGenreIcon(it.name)
         )
+    }
+}
+
+private fun getGenreIcon(genreName: String): String {
+    return when (genreName.lowercase()) {
+        "action" -> "💥"
+        "adventure" -> "🗺️"
+        "animation" -> "🎨"
+        "comedy" -> "😂"
+        "crime" -> "🔪"
+        "documentary" -> "📽️"
+        "drama" -> "🎭"
+        "family" -> "👨‍👩‍👧‍👦"
+        "fantasy" -> "🧙"
+        "history" -> "📜"
+        "horror" -> "👻"
+        "music" -> "🎵"
+        "mystery" -> "🔍"
+        "romance" -> "💕"
+        "science fiction", "sci-fi" -> "🚀"
+        "thriller" -> "😱"
+        "war" -> "⚔️"
+        "western" -> "🤠"
+        "tv movie" -> "📺"
+        else -> "🎬"
     }
 }
 
@@ -57,13 +83,16 @@ fun MovieDetailResponse.toUiModel(): MovieDetailUiModel {
     )
 }
 
+private const val youtubeThumbnailBaseUrl = "https://img.youtube.com/vi/"
+
 fun MovieVideoResponse.toUiModel(): List<MovieVideoUiModel> {
     return results
         .filter { it.site == "YouTube" && it.type == "Trailer" }
         .map {
             MovieVideoUiModel(
                 youtubeKey = it.key,
-                title = it.name
+                title = it.name,
+                thumbnailUrl = "$youtubeThumbnailBaseUrl${it.key}/hqdefault.jpg"
             )
         }
 }

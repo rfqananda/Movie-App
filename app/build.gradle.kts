@@ -76,4 +76,7 @@ dependencies {
 
     debugImplementation(libs.chucker)
     releaseImplementation(libs.chucker.no.op)
+
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 }

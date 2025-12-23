@@ -22,5 +22,6 @@
 
     <string name="genre_item_default_icon">🎬</string>
 
+    <string name="movie_rating">⭐ %.1f</string>
 
 </resources>
