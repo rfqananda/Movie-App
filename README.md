@@ -27,7 +27,7 @@ This application is built entirely in Kotlin and follows the MVVM (Model-View-Vi
 
 # 📂 Project Structure
 ```markdown
-com.example.registrationapp
+com.example.movieapp
 ├── core
 ├── data
 │   ├── api      
