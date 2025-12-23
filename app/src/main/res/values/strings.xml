@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">Movie App</string>
+
+    <string name="review_author_avatar_placeholder">A</string>
+    <string name="review_read_more">Read more</string>
+
+    <string name="genre_title">Movie Genres</string>
+    <string name="genre_subtitle">Browse movies by category</string>
+    <string name="genre_empty_icon">🎭</string>
+    <string name="genre_empty_text">No genres available</string>
+
+    <string name="detail_btn_back_description">Back</string>
+    <string name="detail_rating_icon">⭐</string>
+    <string name="detail_overview_title">Overview</string>
+    <string name="detail_videos_title">Trailers and Videos</string>
+    <string name="detail_reviews_title">Reviews</string>
+
+    <string name="movies_title">Discover Movies</string>
+    <string name="movies_subtitle">Find your next favorite movie</string>
+    <string name="movies_empty_icon">🎬</string>
+    <string name="movies_empty_text">No movies found</string>
+
+    <string name="genre_item_default_icon">🎬</string>
+
+
 </resources>
