@@ -68,7 +68,7 @@ class NetworkModule {
     fun provideOkHttpClient(
         apiKeyInterceptor: ApiKeyInterceptor,
         loggingInterceptor: HttpLoggingInterceptor,
-        chuckerInterceptor: ChuckerInterceptor
+        chuckerInterceptor: Interceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(apiKeyInterceptor)

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,11 +22,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField(
-            "String",
-            "TMDB_API_KEY",
-            "\"${project.properties["TMDB_API_KEY"]}\""
-        )
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(localPropertiesFile.inputStream())
+        }
+
+        val tmdbApiKey = properties.getProperty("TMDB_API_KEY") ?: ""
+
+        buildConfigField("String", "TMDB_API_KEY", "\"$tmdbApiKey\"")
     }
 
     buildTypes {
@@ -79,4 +85,5 @@ dependencies {
 
     implementation(libs.glide)
     kapt(libs.glide.compiler)
+    testImplementation(kotlin("test"))
 }
