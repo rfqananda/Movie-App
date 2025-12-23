@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movieapp.data.repository.MovieRepository
 import com.example.movieapp.ui.model.DiscoverMovieUiModel
+import com.example.registrationapp.core.ErrorMessage
 import javax.inject.Inject
 import com.example.registrationapp.core.Result
 import kotlinx.coroutines.launch
@@ -30,8 +31,24 @@ class MoviesViewModel @Inject constructor(
         isLastPage = false
 
         _movies.value = Result.Loading
+
         viewModelScope.launch {
-            _movies.value = repository.discoverMovies(genreId, currentPage)
+            when (val result = repository.discoverMovies(genreId, currentPage)) {
+                is Result.Success -> {
+                    if (result.data.isEmpty()) {
+                        _movies.value = Result.Empty
+                        isLastPage = true
+                    } else {
+                        _movies.value = Result.Success(result.data)
+                    }
+                }
+                is Result.Error -> {
+                    _movies.value = Result.Error(result.message)
+                }
+                else -> {
+                    _movies.value = Result.Error(ErrorMessage.unknownError)
+                }
+            }
         }
     }
 
@@ -42,11 +59,23 @@ class MoviesViewModel @Inject constructor(
         _loadMoreMovies.value = Result.Loading
 
         viewModelScope.launch {
-            val result = repository.discoverMovies(currentGenreId, currentPage)
-            _loadMoreMovies.value = result
+            when (val result =
+                repository.discoverMovies(currentGenreId, currentPage)) {
 
-            if (result is Result.Success && result.data.isEmpty()) {
-                isLastPage = true
+                is Result.Success -> {
+                    if (result.data.isEmpty()) {
+                        isLastPage = true
+                        _loadMoreMovies.value = Result.Empty
+                    } else {
+                        _loadMoreMovies.value = Result.Success(result.data)
+                    }
+                }
+                is Result.Error -> {
+                    _loadMoreMovies.value = Result.Error(result.message)
+                }
+                else -> {
+                    _loadMoreMovies.value = Result.Error(ErrorMessage.unknownError)
+                }
             }
         }
     }
